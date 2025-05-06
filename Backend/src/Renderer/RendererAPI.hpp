@@ -1,8 +1,7 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
 /**
  * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
+ * @author Krusto Stoyanov ( k.stoianov2@gmail.com ) 
+ * @coauthor Neyko Naydenov (neyko641@gmail.com)
  * @brief 
  * @version 1.0
  * @date 
@@ -10,7 +9,7 @@
  * @section LICENSE
  * MIT License
  * 
- * Copyright (c) 2024 Krasto
+ * Copyright (c) 2025 Krusto, Neyko
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,34 +31,61 @@
  * 
  * @section DESCRIPTION
  * 
- * CLog Header
+ * Renderer declarations
  */
 
+#pragma once
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#include "Core/STDTypes.h"
+#include "Window.hpp"
+#include <Math/Color.h>
+#include <cstdint>
+#include <filesystem>
+#include <string_view>
 
 namespace AudioEngine
 {
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
+    enum class RendererAPIType
     {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
-    }
+        Vulkan,
+        OpenGL,
+        None
+    };
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
-    {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
-    }
+    struct RendererAPIConfig {
+        std::filesystem::path workingDirectory;
+        std::filesystem::path assetsDirectory;
+        std::filesystem::path shadersDirectory;
+        std::string_view windowName;
+        uint32_t initialWidth;
+        uint32_t initialHeight;
+    };
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
+    class RendererAPI
+
     {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
-    }
+    public:
+        inline static RendererAPI* GetInstance() { return s_Instance; }
+
+        static void CreateRendererAPI();
+        static void DestroyRendererAPI();
+
+    public:
+        virtual ~RendererAPI() = default;
+
+        virtual void Init( const RendererAPIConfig& config ) = 0;
+        virtual void Destroy() = 0;
+        virtual Window* GetWindow() = 0;
+        virtual void Clear( const Color4& color ) = 0;
+        virtual void Present() = 0;
+
+    public:
+        inline static RendererAPI* s_Instance;
+        inline static constexpr RendererAPIType s_APIType = RendererAPIType::OpenGL;
+    };
+
 }// namespace AudioEngine
-#endif// CLOG_HEADER

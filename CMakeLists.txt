@@ -59,6 +59,9 @@ file(GLOB_RECURSE SANDBOX_HEADER_FILES ./Sandbox/*.hpp ./Sandbox/*.h)
 file(GLOB_RECURSE AUDIO_PLAYER_SOURCE_FILES ./Backend/*.cpp ./Backend/*.c)
 file(GLOB_RECURSE AUDIO_PLAYER_HEADER_FILES ./Backend/*.hpp ./Backend/*.h)
 
+file(GLOB_RECURSE GLAD_SOURCE_FILES ./Vendor/glad/*.c)
+file(GLOB_RECURSE GLAD_HEADER_FILES ./Vendor/glad/*.h)
+
 add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
 
 set(GLM_INCLDUE_DIR "./Vendor/glm")
@@ -90,33 +93,35 @@ target_compile_definitions(AudioPlayerBackendLib PRIVATE
     $<$<BOOL:${LUNARA_AUDIO_PLAYER_X11}>:_LUNARA_AUDIO_PLAYER_X11>
     $<$<BOOL:${LUNARA_AUDIO_PLAYER_WAYLAND}>:_LUNARA_AUDIO_PLAYER_WAYLAND>
 )
-if(WIN32)
-
-else()
+if(NOT WIN32)
     target_compile_definitions(AudioPlayerBackendLib PRIVATE _LINUX)
 endif()
 
 target_include_directories(AudioPlayerBackendLib PRIVATE "./Backend/src")
+target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor")
 target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/include")
+target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/CLog/include")
+target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/glad/include")
+target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/SDL/include")
 target_include_directories(AudioPlayerBackendLib PUBLIC ${GLM_INCLDUE_DIR})
 
-add_library(AUDIO_PLAYERInterfaceLibrary INTERFACE)
-
-target_link_libraries(AUDIO_PLAYERInterfaceLibrary INTERFACE
-    ${VULKAN_LIBRARY}
-)
-target_link_libraries(AudioPlayerBackendLib PRIVATE AUDIO_PLAYERInterfaceLibrary)
+add_library(glad STATIC ${GLAD_SOURCE_FILES} ${GLAD_HEADER_FILES})
+target_include_directories(glad PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/glad/include")
 
 if(TARGET SDL3::SDL3main)
     target_link_libraries(AudioPlayerBackendLib PUBLIC SDL3::SDL3main)
 endif()
-target_link_libraries(AudioPlayerBackendLib PUBLIC SDL3::SDL3 SDL3_ttf::SDL3_ttf)
+target_link_libraries(AudioPlayerBackendLib PUBLIC glad SDL3::SDL3 SDL3_ttf::SDL3_ttf)
 
 add_executable(Sandbox ${SANDBOX_HEADER_FILES} ${SANDBOX_SOURCE_FILES})
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Backend/src")
+target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor")
+target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/glad/include")
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/include")
+target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/CLog/include")
+target_include_directories(Sandbox PRIVATE "./Vendor/SDL/include")
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Sandbox")
-target_link_libraries(Sandbox PRIVATE AUDIO_PLAYERInterfaceLibrary AudioPlayerBackendLib)
+target_link_libraries(Sandbox PRIVATE AudioPlayerBackendLib)
 if(WIN32)
     add_custom_command(TARGET Sandbox POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:Sandbox> $<TARGET_FILE_DIR:Sandbox>

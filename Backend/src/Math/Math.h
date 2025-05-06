@@ -1,8 +1,9 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
+#ifndef MATH_HEADER
+#define MATH_HEADER
+
 /**
  * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
+ * @author Krusto Stoyanov ( k.stoianov2@gmail.com )
  * @brief 
  * @version 1.0
  * @date 
@@ -10,7 +11,7 @@
  * @section LICENSE
  * MIT License
  * 
- * Copyright (c) 2024 Krasto
+ * Copyright (c) 2025 Krusto
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,34 +33,30 @@
  * 
  * @section DESCRIPTION
  * 
- * CLog Header
+ * Math management
  */
 
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#include "STDTypes.h"
 
-namespace AudioEngine
-{
+/***********************************************************************************************************************
+Type Declarations
+***********************************************************************************************************************/
+typedef struct {
+    int32_t x;
+    int32_t y;
+} Point2i;
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
-    {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
-    }
+typedef struct {
+    float x;
+    float y;
+} Point2f;
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
-    {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
-    }
+/***********************************************************************************************************************
+Function Prototypes
+***********************************************************************************************************************/
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
-    {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
-    }
-}// namespace AudioEngine
-#endif// CLOG_HEADER
+#endif// Math_HEADER

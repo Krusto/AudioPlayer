@@ -1,8 +1,7 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
 /**
  * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
+ * @author Krusto Stoyanov ( k.stoianov2@gmail.com ) 
+ * @coauthor Neyko Naydenov (neyko641@gmail.com)
  * @brief 
  * @version 1.0
  * @date 
@@ -10,7 +9,7 @@
  * @section LICENSE
  * MIT License
  * 
- * Copyright (c) 2024 Krasto
+ * Copyright (c) 2025 Krusto, Neyko
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,34 +31,43 @@
  * 
  * @section DESCRIPTION
  * 
- * CLog Header
+ * Renderer declarations
  */
 
+#pragma once
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#include "OpenGLDataTypes.hpp"
+#include <memory>
 
 namespace AudioEngine
 {
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
+    class OpenGLRendererAPI: public RendererAPI
     {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
-    }
+    public:
+        OpenGLRendererAPI() = default;
+        ~OpenGLRendererAPI() = default;
+        OpenGLRendererAPI( const OpenGLRendererAPI& other ) = delete;
+        OpenGLRendererAPI& operator=( const OpenGLRendererAPI& ) = delete;
+        OpenGLRendererAPI( OpenGLRendererAPI&& other ) = delete;
+        OpenGLRendererAPI& operator=( OpenGLRendererAPI&& other ) = delete;
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
-    {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
-    }
+    public:
+        virtual Window* GetWindow() override;
+        virtual void Init( const RendererAPIConfig& config ) override;
+        virtual void Destroy() override;
+        virtual void Clear( const Color4& color ) override;
+        virtual void Present() override;
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
-    {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
-    }
+    private:
+        void CreateWindow();
+
+    private:
+        std::unique_ptr<RendererDataType> m_RendererData;
+        RendererAPIConfig m_Config;
+    };
+
 }// namespace AudioEngine
-#endif// CLOG_HEADER

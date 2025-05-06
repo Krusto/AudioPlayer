@@ -7,3 +7,6 @@
 [submodule "Vendor/miniaudio"]
 	path = Vendor/miniaudio
 	url = https://github.com/mackron/miniaudio
+[submodule "Vendor/CLog"]
+	path = Vendor/CLog
+	url = https://github.com/Krusto/CLog

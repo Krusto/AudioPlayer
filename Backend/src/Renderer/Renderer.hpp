@@ -1,8 +1,7 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
 /**
  * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
+ * @author Krusto Stoyanov ( k.stoianov2@gmail.com ) 
+ * @coauthor Neyko Naydenov (neyko641@gmail.com)
  * @brief 
  * @version 1.0
  * @date 
@@ -10,7 +9,7 @@
  * @section LICENSE
  * MIT License
  * 
- * Copyright (c) 2024 Krasto
+ * Copyright (c) 2025 Krusto, Neyko
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,34 +31,41 @@
  * 
  * @section DESCRIPTION
  * 
- * CLog Header
+ * Renderer declarations
  */
 
+#pragma once
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#include "Core/STDTypes.h"
+#include "Math/Color.h"
+#include "Math/Rect.h"
+#include "RendererCommands.hpp"
+#include "Texture.hpp"
+#include "Window.hpp"
+
+#include <SDL3/SDL_render.h>
+
+#include <string_view>
 
 namespace AudioEngine
 {
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
+    class Renderer
     {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
-    }
+    public:
+        static RendererResultType Init( std::string_view window_name, uint32_t width, uint32_t height );
+        static void Destroy();
+        static void Present();
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
-    {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
-    }
+        static void Clear( const Color4& color );
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
-    {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
-    }
+        static void BeginRenderPass();
+        static void EndRenderPass();
+        static void Flush();
+
+        static Window* GetWindow();
+    };
 }// namespace AudioEngine
-#endif// CLOG_HEADER

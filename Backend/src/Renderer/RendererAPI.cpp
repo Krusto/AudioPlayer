@@ -1,8 +1,7 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
 /**
  * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
+ * @author Krusto Stoyanov ( k.stoianov2@gmail.com ) 
+ * @coauthor Neyko Naydenov (neyko641@gmail.com)
  * @brief 
  * @version 1.0
  * @date 
@@ -10,7 +9,7 @@
  * @section LICENSE
  * MIT License
  * 
- * Copyright (c) 2024 Krasto
+ * Copyright (c) 2025 Krusto, Neyko
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,34 +31,36 @@
  * 
  * @section DESCRIPTION
  * 
- * CLog Header
+ * Renderer declarations
  */
 
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#include "RendererAPI.hpp"
+#include "OpenGL/OpenGLRendererAPI.hpp"
+#include <Core/Log.h>
+#include <stdexcept>
 
 namespace AudioEngine
 {
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
+    void RendererAPI::CreateRendererAPI()
     {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
+        switch ( s_APIType )
+        {
+            case RendererAPIType::OpenGL:
+                LOG_INFO( "Creating OpenGL renderer API...\n" );
+                s_Instance = new OpenGLRendererAPI();
+                break;
+            default:
+                throw std::runtime_error( "Unknown renderer API" );
+                break;
+        }
     }
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
-    {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
-    }
+    void RendererAPI::DestroyRendererAPI() { delete s_Instance; }
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
-    {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
-    }
+
 }// namespace AudioEngine
-#endif// CLOG_HEADER

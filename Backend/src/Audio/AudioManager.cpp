@@ -45,6 +45,8 @@ Includes
 #include <miniaudio/miniaudio.h>
 #pragma GCC diagnostic pop
 
+#include <Core/Log.h>
+
 /***********************************************************************************************************************
 Typedefs
 ***********************************************************************************************************************/
@@ -81,6 +83,7 @@ namespace AudioEngine
         auto result = ma_engine_init( NULL, &g_AudioManagerData.engine );
         if ( result != MA_SUCCESS ) { return AudioManager_Result_Fail; }
         result = ma_fence_init( &g_AudioManagerData.done_fence );
+
         if ( result != MA_SUCCESS ) { return AudioManager_Result_Fail; }
 
         return AudioManager_Result_Success;
@@ -91,13 +94,18 @@ namespace AudioEngine
         Audio audio;
 
         ma_uint32 soundFlags = 0;
-        soundFlags |= MA_SOUND_FLAG_ASYNC;
+        // soundFlags |= MA_SOUND_FLAG_ASYNC;
         soundFlags |= MA_SOUND_FLAG_DECODE;// Decode in the beginning
 
         audio.sound = ( ma_sound* ) malloc( sizeof( ma_sound ) );
         auto result = ma_sound_init_from_file( &g_AudioManagerData.engine, path.data(), soundFlags, NULL,
                                                &g_AudioManagerData.done_fence, audio.sound );
-        if ( result != MA_SUCCESS ) { return AudioManager_Result_Fail; }
+        LOG_INFO( "Loading %s\n", path.data() );
+        if ( result != MA_SUCCESS )
+        {
+            LOG_ERROR( "Failed to load sound: %d\n", ( int ) result );
+            return AudioManager_Result_Fail;
+        }
 
         //Wait for the sound to load
         ma_fence_wait( &g_AudioManagerData.done_fence );
@@ -157,7 +165,11 @@ namespace AudioEngine
     void AudioManager::_SoundPlay( void* sound )
     {
         auto result = ma_sound_start( ( ma_sound* ) sound );
-        if ( result != MA_SUCCESS ) { ma_atomic_exchange_32( &( ( ma_sound* ) sound )->atEnd, MA_TRUE ); }
+        if ( result != MA_SUCCESS )
+        {
+            ma_atomic_exchange_32( &( ( ma_sound* ) sound )->atEnd, MA_TRUE );
+            LOG_ERROR( "Failed to play sound: %d\n", ( int ) result );
+        }
     }
 
     void AudioManager::_SoundStop( void* sound ) { ( void ) ma_sound_stop( ( ma_sound* ) sound ); }

@@ -1,8 +1,6 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
 /**
  * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
+ * @author Krusto Stoyanov ( k.stoianov2@gmail.com )
  * @brief 
  * @version 1.0
  * @date 
@@ -10,7 +8,7 @@
  * @section LICENSE
  * MIT License
  * 
- * Copyright (c) 2024 Krasto
+ * Copyright (c) 2025 Krusto
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,34 +30,50 @@
  * 
  * @section DESCRIPTION
  * 
- * CLog Header
+ * Texture declarations
  */
-
 
 /***********************************************************************************************************************
 Includes
 ***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#include "Texture.hpp"
+#include <SDL3/SDL_render.h>
 
 namespace AudioEngine
 {
+    /***********************************************************************************************************************
+    Macro definitions
+    ***********************************************************************************************************************/
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
+    /***********************************************************************************************************************
+    Functions declarations
+    ************************************************************************************************************************/
+
+    TextureResultType Texture_Init( Texture* texture, uint32_t width, uint32_t height, uint32_t channels )
     {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
+        texture->info.width = ( float ) width;
+        texture->info.height = ( float ) height;
+        texture->info.channels = channels;
+        texture->data = NULL;
+
+        return TextureResult_Success;
     }
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
+    TextureResultType Texture_SetData( Texture* texture, void* data )
     {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
+        texture->data = data;
+        return TextureResult_Success;
     }
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
+    TextureResultType Texture_GetInfo( Texture* texture, TextureInfo** info )
     {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
+        *info = &texture->info;
+        return TextureResult_Success;
+    }
+
+    TextureResultType Texture_Destroy( Texture* texture )
+    {
+        texture->data = NULL;
+        return TextureResult_Success;
     }
 }// namespace AudioEngine
-#endif// CLOG_HEADER

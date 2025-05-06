@@ -1,27 +1,25 @@
-#ifndef LOG_HEADER
-#define LOG_HEADER
 /**
- * @file
- * @author Krasto Stoyanov ( k.stoianov2@gmail.com )
- * @brief 
+* @file
+ * @author Krasto Stoyanov (k.stoianov2@gmail.com)
+ * @brief
  * @version 1.0
- * @date 
- * 
+ * @date
+ *
  * @section LICENSE
  * MIT License
- * 
- * Copyright (c) 2024 Krasto
- * 
+ *
+ * Copyright (c) 2025 Neyko Naydenov
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,37 +27,40 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
+ *
  * @section DESCRIPTION
- * 
- * CLog Header
+ *
+ * Color Declaration
  */
 
 
-/***********************************************************************************************************************
-Includes
-***********************************************************************************************************************/
-#include <CLog/CLog.h>
+#ifndef COLOR_H
+#define COLOR_H
 
+#ifdef __cplusplus
+extern "C" {
 namespace AudioEngine
 {
+#endif
+    struct Color4 {
+        float r;
+        float g;
+        float b;
+        float a;
+    };
 
-    template <typename... Args>
-    constexpr void LOG_INFO( Args... args )
-    {
-        CLogMessage( INFO_LEVEL, std::forward<Args>( args )... );
-    }
+    struct Color3 {
+        float r;
+        float g;
+        float b;
+    };
 
-    template <typename... Args>
-    constexpr void LOG_ERROR( Args... args )
-    {
-        CLogMessage( ERROR_LEVEL, std::forward<Args>( args )... );
-    }
+#ifdef __cplusplus
 
-    template <typename... Args>
-    constexpr void LOG_WARNING( Args... args )
-    {
-        CLogMessage( WARNING_LEVEL, std::forward<Args>( args )... );
-    }
-}// namespace AudioEngine
-#endif// CLOG_HEADER
+    constexpr Color4 COLOR_RED{ 1.0f, 0.0f, 0.0f, 1.0f };
+}
+}
+#else
+#define COLOR_RED ( Color4{ 1.0f, 0.0f, 0.0f, 1.0f } )
+#endif
+#endif//COLOR_H
