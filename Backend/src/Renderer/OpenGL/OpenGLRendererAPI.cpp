@@ -42,6 +42,9 @@ Includes
 #include "Renderer/Window.hpp"
 
 #include <glad/glad.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_sdl3.h>
+#include <imgui/imgui.h>
 
 #include "SDL3/SDL.h"
 #include "SDL3/SDL_opengl.h"
@@ -52,7 +55,7 @@ namespace AudioEngine
 
     void OpenGLRendererAPI::CreateWindow()
     {
-        if ( SDL_Init( SDL_INIT_VIDEO ) == 0 )
+        if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD ) == 0 )
         {
             LOG_ERROR( "SDL_Init error: %s\n", SDL_GetError() );
             throw std::runtime_error( "Couldn't initialize SDL" );
@@ -69,13 +72,19 @@ namespace AudioEngine
                                                       ( int ) m_Config.initialHeight, SDL_WINDOW_OPENGL ) );
         if ( m_RendererData->window->data == nullptr ) { throw std::runtime_error( "Couldn't create Window" ); };
 
-        SDL_GLContext glContext = SDL_GL_CreateContext( static_cast<SDL_Window*>( m_RendererData->window->data ) );
-        if ( glContext == nullptr ) { throw std::runtime_error( "Couldn't create GL Context" ); };
+        m_RendererData->glContext = SDL_GL_CreateContext( static_cast<SDL_Window*>( m_RendererData->window->data ) );
+        if ( m_RendererData->glContext == nullptr ) { throw std::runtime_error( "Couldn't create GL Context" ); };
 
         if ( !gladLoadGLLoader( reinterpret_cast<GLADloadproc>( SDL_GL_GetProcAddress ) ) )
         {
             throw std::runtime_error( "Couldn't initialize GLAD" );
         }
+
+        SDL_GL_MakeCurrent( ( SDL_Window* ) m_RendererData->window->data, m_RendererData->glContext );
+        SDL_GL_SetSwapInterval( 1 );// Enable vsync
+        SDL_SetWindowPosition( ( SDL_Window* ) m_RendererData->window->data, SDL_WINDOWPOS_CENTERED,
+                               SDL_WINDOWPOS_CENTERED );
+        SDL_ShowWindow( ( SDL_Window* ) m_RendererData->window->data );
     }
 
     Window* OpenGLRendererAPI::GetWindow() { return m_RendererData->window; }
@@ -88,15 +97,75 @@ namespace AudioEngine
 
     void OpenGLRendererAPI::Present() { SDL_GL_SwapWindow( ( SDL_Window* ) ( m_RendererData->window->data ) ); }
 
+    void OpenGLRendererAPI::BeginFrame()
+    {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    void OpenGLRendererAPI::EndFrame()
+    {
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+    }
+
     void OpenGLRendererAPI::Init( const RendererAPIConfig& config )
     {
         m_Config = config;
         m_RendererData = std::make_unique<RendererDataType>();
 
         CreateWindow();
+        InitImGui();
     }
 
     void OpenGLRendererAPI::Destroy() { SDL_DestroyWindow( static_cast<SDL_Window*>( m_RendererData->window->data ) ); }
 
+    void OpenGLRendererAPI::InitImGui()
+    {
+        LOG_INFO( "Initializing ImGui..." );
+        // Setup Dear ImGui context
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        ( void ) io;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;    // IF using Docking Branch
 
+        // Setup Dear ImGui style
+        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsLight();
+
+        // Setup Platform/Renderer backends
+        ImGui_ImplSDL3_InitForOpenGL( ( SDL_Window* ) m_RendererData->window->data, m_RendererData->glContext );
+        ImGui_ImplOpenGL3_Init( "#version 130" );
+        LOG_INFO( "ImGui initialized" );
+    }
+
+    void OpenGLRendererAPI::DestroyImGui()
+    {
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplSDL3_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    void OpenGLRendererAPI::ResizeViewport( uint32_t width, uint32_t height )
+    {
+        glViewport( 0, 0, static_cast<GLsizei>( width ), static_cast<GLsizei>( height ) );
+    }
+
+    uint32_t OpenGLRendererAPI::GetWindowWidth()
+    {
+        int width = 0, height = 0;
+        SDL_GetWindowSizeInPixels( ( SDL_Window* ) m_RendererData->window->data, &width, &height );
+        return static_cast<uint32_t>( width );
+    }
+
+    uint32_t OpenGLRendererAPI::GetWindowHeight()
+    {
+        int width = 0, height = 0;
+        SDL_GetWindowSizeInPixels( ( SDL_Window* ) m_RendererData->window->data, &width, &height );
+        return static_cast<uint32_t>( height );
+    }
 }// namespace AudioEngine

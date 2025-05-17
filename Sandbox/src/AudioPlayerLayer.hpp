@@ -20,7 +20,7 @@ public:
 
     virtual void Destroy() override {}
 
-    virtual void OnImGuiDraw() override {}
+    virtual void OnImGuiDraw() override;
 
     virtual void OnMouseButtonEvent( float x, float y, MouseButtonEventType type, MouseButton button ) override
     {
@@ -38,11 +38,7 @@ public:
         ( void ) key;
     }
 
-    virtual void OnWindowResizeEvent( uint32_t width, uint32_t height ) override
-    {
-        ( void ) width;
-        ( void ) height;
-    }
+    virtual void OnWindowResizeEvent( uint32_t width, uint32_t height ) override;
 
     virtual void OnWindowShouldCloseEvent() override {}
 
@@ -53,5 +49,6 @@ public:
 private:
     AudioEngine::Window* m_Window;
     uint32_t x{}, y{};
-    char text[ 100 ];
+    uint32_t m_Width{}, m_Height{};
+    float m_Volume{ 0.5f };
 };

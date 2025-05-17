@@ -2,6 +2,8 @@
 #include "AudioEngine.hpp"
 #include <Core/Log.h>
 #include <glad/glad.h>
+#include <imgui_impl_opengl3.h>
+#include <imgui_impl_sdl3.h>
 
 namespace AudioEngine
 {
@@ -42,11 +44,13 @@ namespace AudioEngine
                 LayerStack::OnEvent( &event );
             }
 
+            Renderer::BeginRenderPass();
+
             LayerStack::Begin();
             LayerStack::OnUpdate( 1.0f );
             LayerStack::OnImGuiDraw();
             LayerStack::End();
-
+            Renderer::EndRenderPass();
             Renderer::Present();
         }
     }
@@ -57,5 +61,4 @@ namespace AudioEngine
         AudioManager::Destroy();
         Renderer::Destroy();
     }
-
 }// namespace AudioEngine

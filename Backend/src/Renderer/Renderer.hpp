@@ -66,6 +66,10 @@ namespace AudioEngine
         static void EndRenderPass();
         static void Flush();
 
+        static void ResizeViewport( uint32_t width, uint32_t height );
+
         static Window* GetWindow();
+        static uint32_t GetWindowWidth();
+        static uint32_t GetWindowHeight();
     };
 }// namespace AudioEngine

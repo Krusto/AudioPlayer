@@ -39,6 +39,9 @@ Includes
 ***********************************************************************************************************************/
 
 #include "Events.h"
+
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_sdl3.h>
 #include <SDL3/SDL.h>
 
 /***********************************************************************************************************************
@@ -49,17 +52,19 @@ Type Declarations
 Function Prototypes
 ***********************************************************************************************************************/
 
-int PollEvents(Event* event)
+int PollEvents( Event* event )
 {
     SDL_Event ev;
-    int result = SDL_PollEvent(&ev);
-
-    if (result != 0)
+    int result = false;
+    while ( SDL_PollEvent( &ev ) )
     {
-        switch (ev.type)
+        ImGui_ImplSDL3_ProcessEvent( &ev );
+
+        switch ( ev.type )
         {
             case SDL_EVENT_QUIT:
                 event->type = EVENT_QUIT;
+                return true;
                 break;
 
             case SDL_EVENT_KEY_DOWN:
@@ -78,10 +83,10 @@ int PollEvents(Event* event)
                 event->type = EVENT_MOUSE_BUTTON;
                 event->mouseButtonEvent.type = MOUSE_BUTTON_PRESSED;
 
-                if (ev.button.button == SDL_BUTTON_LEFT) event->mouseButtonEvent.button = MOUSE_BUTTON_LEFT;
-                else if (ev.button.button == SDL_BUTTON_MIDDLE)
+                if ( ev.button.button == SDL_BUTTON_LEFT ) event->mouseButtonEvent.button = MOUSE_BUTTON_LEFT;
+                else if ( ev.button.button == SDL_BUTTON_MIDDLE )
                     event->mouseButtonEvent.button = MOUSE_BUTTON_MIDDLE;
-                else if (ev.button.button == SDL_BUTTON_RIGHT)
+                else if ( ev.button.button == SDL_BUTTON_RIGHT )
                     event->mouseButtonEvent.button = MOUSE_BUTTON_RIGHT;
                 event->mouseButtonEvent.x = ev.button.x;
                 event->mouseButtonEvent.y = ev.button.y;
@@ -91,10 +96,10 @@ int PollEvents(Event* event)
                 event->type = EVENT_MOUSE_BUTTON;
                 event->mouseButtonEvent.type = MOUSE_BUTTON_RELEASED;
 
-                if (ev.button.button == SDL_BUTTON_LEFT) event->mouseButtonEvent.button = MOUSE_BUTTON_LEFT;
-                else if (ev.button.button == SDL_BUTTON_MIDDLE)
+                if ( ev.button.button == SDL_BUTTON_LEFT ) event->mouseButtonEvent.button = MOUSE_BUTTON_LEFT;
+                else if ( ev.button.button == SDL_BUTTON_MIDDLE )
                     event->mouseButtonEvent.button = MOUSE_BUTTON_MIDDLE;
-                else if (ev.button.button == SDL_BUTTON_RIGHT)
+                else if ( ev.button.button == SDL_BUTTON_RIGHT )
                     event->mouseButtonEvent.button = MOUSE_BUTTON_RIGHT;
                 event->mouseButtonEvent.x = ev.button.x;
                 event->mouseButtonEvent.y = ev.button.y;
@@ -109,11 +114,11 @@ int PollEvents(Event* event)
                 break;
             case SDL_EVENT_WINDOW_RESIZED:
                 event->type = EVENT_RESIZE_WINDOW;
-                event->resizeWindowEvent.width = (uint32_t) ev.window.data1;
-                event->resizeWindowEvent.height = (uint32_t) ev.window.data2;
+                event->resizeWindowEvent.width = ( uint32_t ) ev.window.data1;
+                event->resizeWindowEvent.height = ( uint32_t ) ev.window.data2;
                 break;
         }
+        result = true;
     }
-
     return result;
 }

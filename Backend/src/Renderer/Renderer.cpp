@@ -84,13 +84,22 @@ namespace AudioEngine
         RendererAPI::GetInstance()->Clear( color );
     }
 
-    void Renderer::BeginRenderPass() {}
+    void Renderer::BeginRenderPass() { RendererAPI::GetInstance()->BeginFrame(); }
 
-    void Renderer::EndRenderPass() {}
+    void Renderer::EndRenderPass() { RendererAPI::GetInstance()->EndFrame(); }
 
     void Renderer::Flush() {}
 
     Window* Renderer::GetWindow() { return RendererAPI::GetInstance()->GetWindow(); }
+
+    uint32_t Renderer::GetWindowWidth() { return RendererAPI::GetInstance()->GetWindowWidth(); }
+
+    uint32_t Renderer::GetWindowHeight() { return RendererAPI::GetInstance()->GetWindowHeight(); }
+
+    void Renderer::ResizeViewport( uint32_t width, uint32_t height )
+    {
+        RendererAPI::GetInstance()->ResizeViewport( width, height );
+    }
 
 
 }// namespace AudioEngine

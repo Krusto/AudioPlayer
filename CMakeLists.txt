@@ -62,6 +62,21 @@ file(GLOB_RECURSE AUDIO_PLAYER_HEADER_FILES ./Backend/*.hpp ./Backend/*.h)
 file(GLOB_RECURSE GLAD_SOURCE_FILES ./Vendor/glad/*.c)
 file(GLOB_RECURSE GLAD_HEADER_FILES ./Vendor/glad/*.h)
 
+set(IMGUI_SOURCE_FILES "${CMAKE_SOURCE_DIR}/Vendor/imgui/backends/imgui_impl_opengl3.cpp"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/backends/imgui_impl_sdl3.cpp"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imgui.cpp"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imgui_draw.cpp"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imgui_tables.cpp"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imgui_widgets.cpp")
+set(IMGUI_HEADER_FILES "${CMAKE_SOURCE_DIR}/Vendor/imgui/backends/imgui_impl_opengl3.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/backends/imgui_impl_sdl3.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imgui.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imconfig.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imgui_internal.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imstb_rectpack.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imstb_textedit.h"
+    "${CMAKE_SOURCE_DIR}/Vendor/imgui/imstb_truetype.h")
+
 add_compile_definitions(GLM_ENABLE_EXPERIMENTAL)
 
 set(GLM_INCLDUE_DIR "./Vendor/glm")
@@ -103,15 +118,24 @@ target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/include")
 target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/CLog/include")
 target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/glad/include")
 target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/SDL/include")
+target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/imgui")
+target_include_directories(AudioPlayerBackendLib PRIVATE "./Vendor/imgui/backends")
 target_include_directories(AudioPlayerBackendLib PUBLIC ${GLM_INCLDUE_DIR})
 
+message(STATUS "${PROJECT_NAME}: Creating imgui lib")
+add_library(imgui STATIC ${IMGUI_SOURCE_FILES} ${IMGUI_HEADER_FILES})
+target_include_directories(imgui PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/imgui")
+target_include_directories(imgui PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/imgui/backends")
+target_include_directories(imgui PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/SDL/include")
+
+message(STATUS "${PROJECT_NAME}: Creating glad lib")
 add_library(glad STATIC ${GLAD_SOURCE_FILES} ${GLAD_HEADER_FILES})
 target_include_directories(glad PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/glad/include")
 
 if(TARGET SDL3::SDL3main)
     target_link_libraries(AudioPlayerBackendLib PUBLIC SDL3::SDL3main)
 endif()
-target_link_libraries(AudioPlayerBackendLib PUBLIC glad SDL3::SDL3 SDL3_ttf::SDL3_ttf)
+target_link_libraries(AudioPlayerBackendLib PUBLIC glad imgui SDL3::SDL3 SDL3_ttf::SDL3_ttf)
 
 add_executable(Sandbox ${SANDBOX_HEADER_FILES} ${SANDBOX_SOURCE_FILES})
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Backend/src")
@@ -119,7 +143,9 @@ target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor")
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/glad/include")
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/include")
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/CLog/include")
-target_include_directories(Sandbox PRIVATE "./Vendor/SDL/include")
+target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/imgui")
+target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/imgui/backends")
+target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Vendor/SDL/include")
 target_include_directories(Sandbox PRIVATE "${CMAKE_SOURCE_DIR}/Sandbox")
 target_link_libraries(Sandbox PRIVATE AudioPlayerBackendLib)
 if(WIN32)

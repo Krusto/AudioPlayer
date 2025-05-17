@@ -82,6 +82,11 @@ namespace AudioEngine
         virtual Window* GetWindow() = 0;
         virtual void Clear( const Color4& color ) = 0;
         virtual void Present() = 0;
+        virtual void BeginFrame() = 0;
+        virtual void EndFrame() = 0;
+        virtual void ResizeViewport( uint32_t width, uint32_t height ) = 0;
+        virtual uint32_t GetWindowWidth() = 0;
+        virtual uint32_t GetWindowHeight() = 0;
 
     public:
         inline static RendererAPI* s_Instance;

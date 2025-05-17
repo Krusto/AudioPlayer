@@ -132,6 +132,7 @@ namespace AudioEngine
         if ( index == ( size_t ) -1 ) { return; }
 
         auto& audio = g_AudioManagerData.audios[ index ];
+        AudioManager::_SoundRewindToBegin( audio.sound );
         AudioManager::_SoundStop( audio.sound );
     }
 
@@ -147,6 +148,31 @@ namespace AudioEngine
 
         ma_fence_uninit( &g_AudioManagerData.done_fence );
         ma_engine_uninit( &g_AudioManagerData.engine );
+    }
+
+    std::string_view AudioManager::GetCurrentAudioName()
+    {
+        for ( size_t i = 0; i < g_AudioManagerData.audio_views.size(); i++ )
+        {
+            if ( ma_sound_is_playing( g_AudioManagerData.audios[ i ].sound ) )
+            {
+                return g_AudioManagerData.audio_views[ i ].name;
+            }
+        }
+        return "None";
+    }
+
+    float AudioManager::SetVolume( float volume )
+    {
+
+        auto result = ma_engine_set_volume( &g_AudioManagerData.engine, volume );
+
+        if ( result != MA_SUCCESS )
+        {
+            LOG_ERROR( "Failed to set volume: %d\n", ( int ) result );
+            return ma_engine_get_volume( &g_AudioManagerData.engine );
+        }
+        return volume;
     }
 
     bool AudioManager::IsAudioPlaying( std::string_view name )

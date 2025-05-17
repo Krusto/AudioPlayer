@@ -21,6 +21,7 @@ namespace AudioEngine
         AudioEngine::Window* window;
         SDL_Renderer* renderer;
         SDL_Surface* surface;
+        SDL_GLContext glContext;
 
         float width;
         float height;

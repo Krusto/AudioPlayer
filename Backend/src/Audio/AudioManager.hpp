@@ -74,6 +74,9 @@ namespace AudioEngine
 
         static void Destroy();
 
+        static std::string_view GetCurrentAudioName();
+        static float SetVolume( float volume );
+
     private:
         static size_t GetAudioIndex( std::string_view name );
         static void _SoundRewindToBegin( void* sound );

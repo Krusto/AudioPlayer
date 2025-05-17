@@ -51,7 +51,7 @@ namespace AudioEngine
         switch ( s_APIType )
         {
             case RendererAPIType::OpenGL:
-                LOG_INFO( "Creating OpenGL renderer API...\n" );
+                LOG_INFO( "Creating OpenGL renderer API..." );
                 s_Instance = new OpenGLRendererAPI();
                 break;
             default:

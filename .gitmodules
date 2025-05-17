@@ -10,3 +10,6 @@
 [submodule "Vendor/CLog"]
 	path = Vendor/CLog
 	url = https://github.com/Krusto/CLog
+[submodule "Vendor/imgui"]
+	path = Vendor/imgui
+	url = https://github.com/ocornut/imgui

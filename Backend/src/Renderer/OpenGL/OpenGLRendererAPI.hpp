@@ -61,9 +61,16 @@ namespace AudioEngine
         virtual void Destroy() override;
         virtual void Clear( const Color4& color ) override;
         virtual void Present() override;
+        virtual void BeginFrame() override;
+        virtual void EndFrame() override;
+        virtual void ResizeViewport( uint32_t width, uint32_t height ) override;
+        virtual uint32_t GetWindowWidth() override;
+        virtual uint32_t GetWindowHeight() override;
 
     private:
         void CreateWindow();
+        void InitImGui();
+        void DestroyImGui();
 
     private:
         std::unique_ptr<RendererDataType> m_RendererData;
