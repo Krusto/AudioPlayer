@@ -67,14 +67,6 @@ namespace AudioEngine
         RendererTextAlignAttribute align;
     };
 
-    struct Texture;
-
-    struct RendererCommandDrawTexture {
-        float x;
-        float y;
-        Texture* texture;
-    };
-
     struct RendererCommandDrawCircle {
         float x;
         float y;

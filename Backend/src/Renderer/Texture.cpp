@@ -37,43 +37,19 @@
 Includes
 ***********************************************************************************************************************/
 #include "Texture.hpp"
-#include <SDL3/SDL_render.h>
+#include <Renderer/Renderer.hpp>
 
 namespace AudioEngine
 {
-    /***********************************************************************************************************************
-    Macro definitions
-    ***********************************************************************************************************************/
-
-    /***********************************************************************************************************************
-    Functions declarations
-    ************************************************************************************************************************/
-
-    TextureResultType Texture_Init( Texture* texture, uint32_t width, uint32_t height, uint32_t channels )
+    Texture Texture::Create( std::filesystem::path path )
     {
-        texture->info.width = ( float ) width;
-        texture->info.height = ( float ) height;
-        texture->info.channels = channels;
-        texture->data = NULL;
-
-        return TextureResult_Success;
+        Texture texture;
+        texture.Load( path );
+        return texture;
     }
 
-    TextureResultType Texture_SetData( Texture* texture, void* data )
+    void Texture::Load( std::filesystem::path path )
     {
-        texture->data = data;
-        return TextureResult_Success;
-    }
-
-    TextureResultType Texture_GetInfo( Texture* texture, TextureInfo** info )
-    {
-        *info = &texture->info;
-        return TextureResult_Success;
-    }
-
-    TextureResultType Texture_Destroy( Texture* texture )
-    {
-        texture->data = NULL;
-        return TextureResult_Success;
+        Renderer::LoadTexture( path, m_id, m_width, m_height, m_channels );
     }
 }// namespace AudioEngine

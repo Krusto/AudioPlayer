@@ -101,5 +101,11 @@ namespace AudioEngine
         RendererAPI::GetInstance()->ResizeViewport( width, height );
     }
 
+    void Renderer::LoadTexture( std::filesystem::path path, size_t& id, size_t& width, size_t& height,
+                                size_t& channels )
+    {
+        RendererAPI::GetInstance()->LoadTexture( path, id, width, height, channels );
+    }
+
 
 }// namespace AudioEngine

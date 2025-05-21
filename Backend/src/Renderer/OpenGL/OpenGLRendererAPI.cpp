@@ -50,6 +50,18 @@ Includes
 #include "SDL3/SDL_opengl.h"
 #include <stdexcept>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
+#pragma GCC diagnostic ignored "-Wimplicit-int-conversion"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wextra"
+#pragma GCC diagnostic ignored "-Wpedantic"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#pragma GCC diagnostic pop
+
 namespace AudioEngine
 {
 
@@ -67,9 +79,9 @@ namespace AudioEngine
 
         m_RendererData->window = new Window;
         m_RendererData->window->name = m_Config.windowName.data();
-        m_RendererData->window->data =
-                static_cast<void*>( SDL_CreateWindow( m_RendererData->window->name, ( int ) m_Config.initialWidth,
-                                                      ( int ) m_Config.initialHeight, SDL_WINDOW_OPENGL ) );
+        m_RendererData->window->data = static_cast<void*>(
+                SDL_CreateWindow( m_RendererData->window->name, ( int ) m_Config.initialWidth,
+                                  ( int ) m_Config.initialHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE ) );
         if ( m_RendererData->window->data == nullptr ) { throw std::runtime_error( "Couldn't create Window" ); };
 
         m_RendererData->glContext = SDL_GL_CreateContext( static_cast<SDL_Window*>( m_RendererData->window->data ) );
@@ -84,6 +96,8 @@ namespace AudioEngine
         SDL_GL_SetSwapInterval( 1 );// Enable vsync
         SDL_SetWindowPosition( ( SDL_Window* ) m_RendererData->window->data, SDL_WINDOWPOS_CENTERED,
                                SDL_WINDOWPOS_CENTERED );
+
+
         SDL_ShowWindow( ( SDL_Window* ) m_RendererData->window->data );
     }
 
@@ -167,5 +181,34 @@ namespace AudioEngine
         int width = 0, height = 0;
         SDL_GetWindowSizeInPixels( ( SDL_Window* ) m_RendererData->window->data, &width, &height );
         return static_cast<uint32_t>( height );
+    }
+
+    void OpenGLRendererAPI::LoadTexture( std::filesystem::path path, size_t& id, size_t& width, size_t& height,
+                                         size_t& channels )
+    {
+        unsigned char* data =
+                stbi_load( path.c_str(), ( int* ) &width, ( int* ) &height, ( int* ) &channels, 4 );// force RGBA
+        if ( !data )
+        {
+            printf( "Failed to load image\n" );
+            return;
+        }
+
+        // Upload to OpenGL texture (same as before)
+        GLuint textureID;
+        glGenTextures( 1, &textureID );
+        glBindTexture( GL_TEXTURE_2D, textureID );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ( int ) width, ( int ) height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                      ( void* ) data );
+
+        glBindTexture( GL_TEXTURE_2D, 0 );
+
+        id = textureID;
+        stbi_image_free( data );
     }
 }// namespace AudioEngine

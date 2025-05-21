@@ -87,6 +87,8 @@ namespace AudioEngine
         virtual void ResizeViewport( uint32_t width, uint32_t height ) = 0;
         virtual uint32_t GetWindowWidth() = 0;
         virtual uint32_t GetWindowHeight() = 0;
+        virtual void LoadTexture( std::filesystem::path path, size_t& id, size_t& width, size_t& height,
+                                  size_t& channels ) = 0;
 
     public:
         inline static RendererAPI* s_Instance;

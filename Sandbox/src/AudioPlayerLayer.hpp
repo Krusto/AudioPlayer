@@ -46,9 +46,18 @@ public:
 
     virtual void End() override {}
 
+    void DrawSongList();
+    void DrawPlayerControls();
+    void DrawCurrentlyPlaying();
+    void DrawLeftPanel();
+
 private:
     AudioEngine::Window* m_Window;
     uint32_t x{}, y{};
     uint32_t m_Width{}, m_Height{};
     float m_Volume{ 0.5f };
+    std::filesystem::path m_SelectedFile;
+    std::filesystem::path m_CurrentlyPlaying{};
+    AudioEngine::Texture m_PlayButtonTexture;
+    AudioEngine::Texture m_PauseButtonTexture;
 };

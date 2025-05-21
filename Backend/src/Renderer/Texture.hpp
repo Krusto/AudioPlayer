@@ -35,45 +35,41 @@
 
 #pragma once
 
-/***********************************************************************************************************************
-Includes
-***********************************************************************************************************************/
-#include "Core/STDTypes.h"
+#include <cstdint>
+#include <filesystem>
 
 namespace AudioEngine
 {
-    /***********************************************************************************************************************
-    Macro definitions
-    ***********************************************************************************************************************/
-
-    /***********************************************************************************************************************
-    Type definitions
-    ***********************************************************************************************************************/
-    typedef struct {
-        float width;
-        float height;
-        uint32_t channels;
-    } TextureInfo;
-
-    typedef enum
+    class Texture
     {
-        TextureResult_None = 0,
-        TextureResult_Success,
-        TextureResult_Error
-    } TextureResultType;
+    public:
+        Texture() = default;
+        ~Texture() = default;
 
-    struct Texture {
-        TextureInfo info;
-        void* data;
+    public:
+        static Texture Create( std::filesystem::path path );
+
+    public:
+        void Load( std::filesystem::path path );
+
+        size_t GetId() const { return m_id; }
+
+        size_t GetWidth() const { return m_width; }
+
+        size_t GetHeight() const { return m_height; }
+
+        size_t GetChannels() const { return m_channels; }
+
+    private:
+        Texture( size_t id, size_t width, size_t height, size_t channels )
+            : m_id( id ), m_width( width ), m_height( height ), m_channels( channels )
+        {}
+
+    private:
+        size_t m_id = 0;
+        size_t m_width = 0;
+        size_t m_height = 0;
+        size_t m_channels = 0;
     };
-
-    /***********************************************************************************************************************
-    Functions declarations
-    ************************************************************************************************************************/
-
-    extern TextureResultType Texture_Init( Texture* texture, uint32_t width, uint32_t height, uint32_t channels );
-    extern TextureResultType Texture_SetData( Texture* texture, void* data );
-    extern TextureResultType Texture_GetInfo( Texture* texture, TextureInfo** info );
-    extern TextureResultType Texture_Destroy( Texture* texture );
 
 }// namespace AudioEngine

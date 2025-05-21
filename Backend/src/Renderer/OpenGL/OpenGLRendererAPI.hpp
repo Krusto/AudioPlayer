@@ -66,6 +66,8 @@ namespace AudioEngine
         virtual void ResizeViewport( uint32_t width, uint32_t height ) override;
         virtual uint32_t GetWindowWidth() override;
         virtual uint32_t GetWindowHeight() override;
+        virtual void LoadTexture( std::filesystem::path path, size_t& id, size_t& width, size_t& height,
+                                  size_t& channels ) override;
 
     private:
         void CreateWindow();

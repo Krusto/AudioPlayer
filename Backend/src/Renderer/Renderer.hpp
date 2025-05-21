@@ -68,6 +68,9 @@ namespace AudioEngine
 
         static void ResizeViewport( uint32_t width, uint32_t height );
 
+        static void LoadTexture( std::filesystem::path path, size_t& id, size_t& width, size_t& height,
+                                 size_t& channels );
+
         static Window* GetWindow();
         static uint32_t GetWindowWidth();
         static uint32_t GetWindowHeight();
